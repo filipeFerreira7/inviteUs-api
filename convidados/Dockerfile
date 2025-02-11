@@ -7,3 +7,4 @@ FROM openjdk:21
 WORKDIR /app
 COPY --from=build /build/target/convidados-0.0.1-SNAPSHOT.jar /app/convidados.jar
 ENTRYPOINT ["java", "-jar", "/app/convidados.jar"]
+ 

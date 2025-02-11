@@ -6,5 +6,5 @@ create table convidados(
     convite_id bigint not null
 
     primary key(id)
-    constraint fk_convidados_convite_id foreign key (convite_id) references convite(id)
+    CONSTRAINT fk_convidados_convite FOREIGN KEY (convite_id) REFERENCES convite(id)
 );

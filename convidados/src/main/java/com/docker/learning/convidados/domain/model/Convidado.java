@@ -10,23 +10,22 @@ import lombok.NoArgsConstructor;
 
 @Entity
 public class Convidado {
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name="id")
-//    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column
     private String nome;
 
-//    @Column
-//    private String email;
-
-    @Id
     @Column
+    private String email;
+
+    @Column(nullable = false,unique = true)
     private String cpf;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "convite_id")
-//    private Convite convite;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "convite_id")
+    private Convite convite;
 
 
 

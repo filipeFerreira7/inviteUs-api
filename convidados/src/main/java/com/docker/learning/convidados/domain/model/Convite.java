@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,12 +18,10 @@ public class Convite {
     @Column(name="id")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_anfitriao")
-    private Anfitriao idAnfitriao;
+    private Long idAnfitriao;
 
    @Column
-    private LocalDate data;
+    private LocalDateTime data;
 
 
 

@@ -1,0 +1,14 @@
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'festa'
+      MYSQL_ROOT_PASSWORD: '4260'
+    ports:
+      - "3307:3306"
+    volumes:
+      - my-db-mysql-5:/var/lib/mysql
+
+volumes:
+  my-db-mysql-5:

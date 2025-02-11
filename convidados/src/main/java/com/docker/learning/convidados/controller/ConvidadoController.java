@@ -26,4 +26,11 @@ public class ConvidadoController {
         return repository.findAll();
     }
 
+    @PostMapping
+    public ResponseEntity postConvidado(@RequestBody ConvidadoDTORequest convidadoDTORequest){
+        var post = service.post(convidadoDTORequest);
+
+        return ResponseEntity.ok(post);
+    }
+
 }

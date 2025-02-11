@@ -24,7 +24,7 @@ public class Anfitriao {
     @Column
     private String email;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String cpf;
 
     @Column
