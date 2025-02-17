@@ -1,4 +1,5 @@
 package com.docker.learning.convidados.domain.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 @Entity
+@Table(name = "convidados")
 public class Convidado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +26,11 @@ public class Convidado {
     private String cpf;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "convite_id")
+    @JoinColumn(name = "convites_id", referencedColumnName = "id")
+    @JsonIgnore
     private Convite convite;
+
+
 
 
 

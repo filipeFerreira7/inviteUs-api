@@ -8,14 +8,16 @@ import java.time.LocalDateTime;
 public record ConviteDTOResponse(
         Long id,
         Long idAnfitriao,
-        LocalDateTime data
+        LocalDateTime data,
+        LocalDateTime validade
 ) {
     public static ConviteDTOResponse valueOf(Convite convite) {
 
         return new ConviteDTOResponse(
                 convite.getId(),
-                convite.getIdAnfitriao(),
-                convite.getData()
+                convite.getAnfitriao().getId(),
+                convite.getDataCriacao(),
+                convite.getValidade()
         );
     }
 }

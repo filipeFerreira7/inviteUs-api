@@ -12,16 +12,27 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 @Entity
+@Table(name = "convites")
 public class Convite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
 
-    private Long idAnfitriao;
 
    @Column
-    private LocalDateTime data;
+    private LocalDateTime validade;
+
+   @Column
+   private LocalDateTime dataCriacao;
+
+   @OneToOne(mappedBy = "convite")
+   private Convidado convidado;
+
+   @ManyToOne
+    @JoinColumn(name = "anfitriao_id",nullable = false)
+    private Anfitriao anfitriao;
+
 
 
 
