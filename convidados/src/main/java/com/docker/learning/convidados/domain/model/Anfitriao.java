@@ -1,6 +1,7 @@
 package com.docker.learning.convidados.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,8 +39,8 @@ public class Anfitriao {
     private Integer totalConvites;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Convite> convites;
+    @JsonManagedReference
+    private List<Convite> convites = new ArrayList<>();
 
 
 }

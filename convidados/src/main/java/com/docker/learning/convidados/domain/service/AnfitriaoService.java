@@ -11,14 +11,21 @@ import com.docker.learning.convidados.domain.repository.ConvidadoRepository;
 import com.docker.learning.convidados.domain.repository.ConviteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
+@EnableScheduling
 public class AnfitriaoService {
+
     @Autowired
     private AnfitriaoRepository repository;
     @Autowired
@@ -54,7 +61,9 @@ public class AnfitriaoService {
            throw new EntityNotFoundException("Anfitrião não encontrado.");
        }
 
-       return 15 - conviteRepository.countInvitePerWeek(anfitriaoId, LocalDateTime.now().minusDays(7));
+       var dataLimite = LocalDateTime.now().minusDays(7);
+       int convitesUsados = conviteRepository.countInvitePerWeek(anfitriaoId, dataLimite);
+       return 15 - convitesUsados;
     }
 
 
@@ -64,10 +73,10 @@ public class AnfitriaoService {
                 .orElseThrow(() -> new RuntimeException("Anfitrião não encontrado"));
 
         Convite c = new Convite();
-
+        c.setAtivo(true); // assim que o convite é postado, é encarado como true
         c.setAnfitriao(anfitriao);
         c.setDataCriacao(LocalDateTime.now());
-        c.setValidade(LocalDateTime.now().plusHours(12));
+        c.setValidade(LocalDateTime.now().plusMinutes(2));
 
         if(anfitriao.getConvites()==null){
             anfitriao.setConvites(new ArrayList<>());
@@ -75,9 +84,33 @@ public class AnfitriaoService {
         anfitriao.getConvites().add(c);
         anfitriao.setTotalConvites(totalConvites(anfitriao.getId()));
 
+
         conviteRepository.save(c);
         repository.save(anfitriao);
 
         return ConviteDTOResponse.valueOf(c);
+    }
+
+
+    @Scheduled(fixedRate = 10000)
+    @Transactional
+    public void inativarConvitesExpirados() {
+        conviteRepository.desativarConvitesExpirados(LocalDateTime.now());
+    }
+
+
+
+    @Transactional
+    public void deleteConvite(Long idConvite){
+        var convite = conviteRepository.findById(idConvite).orElseThrow(() -> new
+                IllegalArgumentException("Id inexistente! Impossível excluir"));
+
+        Anfitriao anfitriao = convite.getAnfitriao();
+        if (anfitriao != null) {
+            anfitriao.getConvites().remove(convite);
+            repository.save(anfitriao);
+        }
+
+        conviteRepository.delete(convite);
     }
 }

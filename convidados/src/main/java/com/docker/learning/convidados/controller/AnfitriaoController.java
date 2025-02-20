@@ -51,4 +51,10 @@ public class AnfitriaoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(convite);
     }
 
+    @DeleteMapping("/deleteConvite/{id}")
+    public ResponseEntity deleteConvite(@PathVariable Long id) {
+       service.deleteConvite(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

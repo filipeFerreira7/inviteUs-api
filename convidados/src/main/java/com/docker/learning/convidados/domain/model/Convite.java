@@ -1,4 +1,5 @@
 package com.docker.learning.convidados.domain.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +32,14 @@ public class Convite {
 
    @ManyToOne
     @JoinColumn(name = "anfitriao_id",nullable = false)
+   @JsonBackReference
     private Anfitriao anfitriao;
+
+   private Boolean ativo;
+
+   public void excluir() {
+       this.ativo = false;
+   }
 
 
 
