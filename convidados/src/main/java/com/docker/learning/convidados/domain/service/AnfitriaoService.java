@@ -14,12 +14,16 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,6 +36,8 @@ public class AnfitriaoService {
     private ConviteRepository conviteRepository;
     @Autowired
     private ConvidadoRepository convidadoRepository;
+    @Autowired
+    private AnfitriaoRepository anfitriaoRepository;
 
 
     //depois vamos pensar em algo melhor, mas o anfitrião se postar não é certo
@@ -76,7 +82,7 @@ public class AnfitriaoService {
         c.setAtivo(true); // assim que o convite é postado, é encarado como true
         c.setAnfitriao(anfitriao);
         c.setDataCriacao(LocalDateTime.now());
-        c.setValidade(LocalDateTime.now().plusMinutes(2));
+        c.setValidade(LocalDateTime.now().plusMinutes(2)); // coloquei 2 apenas para testes
 
         if(anfitriao.getConvites()==null){
             anfitriao.setConvites(new ArrayList<>());
@@ -96,6 +102,25 @@ public class AnfitriaoService {
     @Transactional
     public void inativarConvitesExpirados() {
         conviteRepository.desativarConvitesExpirados(LocalDateTime.now());
+    }
+
+    @Scheduled(fixedRate = 10000)
+    @Transactional
+    public void resetarConvitesDomingo(){
+        LocalDateTime now = LocalDateTime.now();
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
+        LocalTime localTime = now.toLocalTime();
+
+        System.out.println("Método executado em: " + now);
+
+        // coloquei na thursday para fazer o teste hoje
+        if(dayOfWeek == DayOfWeek.TUESDAY
+                && localTime.isAfter(LocalTime.of(17, 00))
+                && localTime.isBefore(LocalTime.of(17, 01))){
+                    anfitriaoRepository.resetarConvites();
+                    anfitriaoRepository.atualizarTotalConvites(15);
+                    System.out.println("Convites resetados em: " + now);
+        }
     }
 
 

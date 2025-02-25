@@ -20,4 +20,5 @@ public interface ConviteRepository extends JpaRepository<Convite, Long> {
     void desativarConvitesExpirados(@Param("data") LocalDateTime data);
 
     List<Convite> findByValidadeBeforeAndAtivoTrue(LocalDateTime validade);
+
 }
