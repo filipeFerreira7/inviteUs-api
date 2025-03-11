@@ -69,7 +69,7 @@ public class AnfitriaoService {
 
        var dataLimite = LocalDateTime.now().minusDays(7);
        int convitesUsados = conviteRepository.countInvitePerWeek(anfitriaoId, dataLimite);
-       return 15 - convitesUsados;
+       return anfitriao.get().getTotalConvites() - convitesUsados;
     }
 
 
@@ -115,16 +115,13 @@ public class AnfitriaoService {
 
         // coloquei na thursday para fazer o teste hoje
         if(dayOfWeek == DayOfWeek.TUESDAY
-                && localTime.isAfter(LocalTime.of(17, 00))
-                && localTime.isBefore(LocalTime.of(17, 01))){
+                && localTime.isAfter(LocalTime.of(16, 55))
+                && localTime.isBefore(LocalTime.of(16, 56))){
                     anfitriaoRepository.resetarConvites();
                     anfitriaoRepository.atualizarTotalConvites(15);
                     System.out.println("Convites resetados em: " + now);
         }
     }
-
-
-
     @Transactional
     public void deleteConvite(Long idConvite){
         var convite = conviteRepository.findById(idConvite).orElseThrow(() -> new
