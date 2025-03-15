@@ -14,11 +14,7 @@ public interface AnfitriaoRepository extends JpaRepository<Anfitriao, Long> {
     void resetarConvites();
 
 
-    @Query("SELECT a.totalConvites FROM Anfitriao a")
-    int totalConvites();
-
-    @Modifying
-    @Query("UPDATE Anfitriao a SET a.totalConvites = :novoTotal")
-    void atualizarTotalConvites(@Param("novoTotal") int novoTotal);
+    @Query("SELECT a.totalConvites FROM Anfitriao a WHERE a.id = :anfitriaoId")
+    Integer totalConvites(@Param("anfitriaoId") Long anfitriaoId);
 
 }

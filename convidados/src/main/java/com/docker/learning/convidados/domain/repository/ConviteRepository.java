@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ConviteRepository extends JpaRepository<Convite, Long> {
 
-    @Query("SELECT COUNT(c) FROM Convite c WHERE c.anfitriao.id = :anfitriaoId AND c.validade >= :dataLimite")
+    @Query("SELECT COUNT(c) FROM Convite c WHERE c.anfitriao.id = :anfitriaoId AND c.dataCriacao >= :dataLimite")
     int countInvitePerWeek(@Param("anfitriaoId") Long anfitriaoId, @Param("dataLimite") LocalDateTime dataLimite);
 
 

@@ -29,7 +29,6 @@ import java.util.List;
 @Service
 @EnableScheduling
 public class AnfitriaoService {
-
     @Autowired
     private AnfitriaoRepository repository;
     @Autowired
@@ -38,7 +37,6 @@ public class AnfitriaoService {
     private ConvidadoRepository convidadoRepository;
     @Autowired
     private AnfitriaoRepository anfitriaoRepository;
-
 
     //depois vamos pensar em algo melhor, mas o anfitrião se postar não é certo
     @Transactional
@@ -51,45 +49,53 @@ public class AnfitriaoService {
         anfitriao.setTotalConvites(15);
         anfitriao.setConvites(new ArrayList<>());
 
-
         repository.save(anfitriao);
 
         return anfitriao;
     }
 
-
+    @Transactional
     public int totalConvites(Long anfitriaoId) {
+        var anfitriao = repository.findById(anfitriaoId);
+
        if(anfitriaoId == null){
            throw new IllegalArgumentException("Id do anfitrião não pode ser nulo");
        }
-       var anfitriao = repository.findById(anfitriaoId);
        if(anfitriao.isEmpty()){
            throw new EntityNotFoundException("Anfitrião não encontrado.");
        }
 
-       var dataLimite = LocalDateTime.now().minusDays(7);
-       int convitesUsados = conviteRepository.countInvitePerWeek(anfitriaoId, dataLimite);
-       return anfitriao.get().getTotalConvites() - convitesUsados;
-    }
+        LocalDateTime now = LocalDateTime.now();
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
+       var dataLimite = now.minusDays(dayOfWeek.getValue() - 1);
+       int convitesUsadosDaSemana = conviteRepository.countInvitePerWeek(anfitriaoId, dataLimite);
+       int total =  15 - convitesUsadosDaSemana;
 
+
+       return total;
+    }
 
     @Transactional
     public ConviteDTOResponse postConvite(ConviteDTORequest convite){
         Anfitriao anfitriao = repository.findById(convite.idAnfitriao())
                 .orElseThrow(() -> new RuntimeException("Anfitrião não encontrado"));
 
+        int convitesRestantes = totalConvites(anfitriao.getId());
+        if (convitesRestantes <= 0) {
+            throw new RuntimeException("Limite de convites atingido para esta semana.");
+        }
+
         Convite c = new Convite();
-        c.setAtivo(true); // assim que o convite é postado, é encarado como true
+        c.setAtivo(true);
         c.setAnfitriao(anfitriao);
         c.setDataCriacao(LocalDateTime.now());
-        c.setValidade(LocalDateTime.now().plusMinutes(2)); // coloquei 2 apenas para testes
+        c.setValidade(LocalDateTime.now().plusMinutes(2));
 
         if(anfitriao.getConvites()==null){
             anfitriao.setConvites(new ArrayList<>());
         }
         anfitriao.getConvites().add(c);
         anfitriao.setTotalConvites(totalConvites(anfitriao.getId()));
-
 
         conviteRepository.save(c);
         repository.save(anfitriao);
@@ -98,28 +104,25 @@ public class AnfitriaoService {
     }
 
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 30000)
     @Transactional
     public void inativarConvitesExpirados() {
         conviteRepository.desativarConvitesExpirados(LocalDateTime.now());
     }
 
-    @Scheduled(fixedRate = 10000)
+
+    @Scheduled(fixedRate = 30000)
     @Transactional
     public void resetarConvitesDomingo(){
         LocalDateTime now = LocalDateTime.now();
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         LocalTime localTime = now.toLocalTime();
 
-        System.out.println("Método executado em: " + now);
 
-        // coloquei na thursday para fazer o teste hoje
-        if(dayOfWeek == DayOfWeek.TUESDAY
-                && localTime.isAfter(LocalTime.of(16, 55))
-                && localTime.isBefore(LocalTime.of(16, 56))){
+        if(dayOfWeek == DayOfWeek.FRIDAY
+                && localTime.isAfter(LocalTime.of(12, 59))
+                && localTime.isBefore(LocalTime.of(13, 00))){
                     anfitriaoRepository.resetarConvites();
-                    anfitriaoRepository.atualizarTotalConvites(15);
-                    System.out.println("Convites resetados em: " + now);
         }
     }
     @Transactional

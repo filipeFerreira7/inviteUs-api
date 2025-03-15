@@ -43,7 +43,9 @@ public class AnfitriaoController {
     }
 
     @GetMapping("/{anfitriaoId}")
-    public ResponseEntity getConvites(@PathVariable Long anfitriaoId){return ResponseEntity.ok(service.totalConvites(anfitriaoId));}
+    public ResponseEntity getConvites(@PathVariable Long anfitriaoId){
+        return ResponseEntity.ok(repository.totalConvites(anfitriaoId));
+    }
 
     @PostMapping("/postConvite")
     public ResponseEntity postConvite(@RequestBody ConviteDTORequest dto) {
