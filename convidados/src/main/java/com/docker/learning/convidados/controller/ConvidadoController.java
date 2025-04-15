@@ -6,9 +6,11 @@ import com.docker.learning.convidados.domain.dto.ConvidadoDTORequest;
 import com.docker.learning.convidados.domain.repository.ConvidadoRepository;
 import com.docker.learning.convidados.domain.model.Convidado;
 import com.docker.learning.convidados.domain.service.ConvidadoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/convidados")
@@ -26,7 +28,7 @@ public class ConvidadoController {
     }
 
     @PostMapping
-    public ResponseEntity postConvidado(@RequestBody ConvidadoDTORequest convidadoDTORequest){
+    public ResponseEntity postConvidado(@Valid @RequestBody ConvidadoDTORequest convidadoDTORequest){
         var post = service.post(convidadoDTORequest);
 
         return ResponseEntity.ok(post);

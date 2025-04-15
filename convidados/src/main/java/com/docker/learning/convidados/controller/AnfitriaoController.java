@@ -9,6 +9,7 @@ import com.docker.learning.convidados.domain.repository.AnfitriaoRepository;
 import com.docker.learning.convidados.domain.repository.ConviteRepository;
 import com.docker.learning.convidados.domain.service.AnfitriaoService;
 import com.docker.learning.convidados.domain.service.ConvidadoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class AnfitriaoController {
     }
 
     @PostMapping
-    public ResponseEntity postAnfitriao(@RequestBody AnfitriaoDTORequest dto){
+    public ResponseEntity postAnfitriao(@Valid @RequestBody AnfitriaoDTORequest dto){
         var post = service.post(dto);
 
         return ResponseEntity.ok(post);
@@ -48,14 +49,14 @@ public class AnfitriaoController {
     }
 
     @PostMapping("/postConvite")
-    public ResponseEntity postConvite(@RequestBody ConviteDTORequest dto) {
-         var convite = service.postConvite(dto);
+    public ResponseEntity postConvite(@Valid @RequestBody ConviteDTORequest dto) {
+        var convite = service.postConvite(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(convite);
     }
 
     @DeleteMapping("/deleteConvite/{id}")
     public ResponseEntity deleteConvite(@PathVariable Long id) {
-       service.deleteConvite(id);
+        service.deleteConvite(id);
         return ResponseEntity.noContent().build();
     }
 

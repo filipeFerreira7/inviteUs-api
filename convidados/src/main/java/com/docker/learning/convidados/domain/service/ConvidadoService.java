@@ -10,6 +10,7 @@ import com.docker.learning.convidados.domain.model.Convite;
 import com.docker.learning.convidados.domain.repository.AnfitriaoRepository;
 import com.docker.learning.convidados.domain.repository.ConvidadoRepository;
 import com.docker.learning.convidados.domain.repository.ConviteRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ConvidadoService {
         c.setEmail(convidado.email());
         c.setCpf(convidado.cpf());
         var convite = conviteRepository.findById(convidado.idConvite())
-                .orElseThrow(() -> new RuntimeException("Convite não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Convite não encontrado"));
 
         c.setConvite(convite);
 

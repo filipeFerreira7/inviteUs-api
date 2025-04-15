@@ -4,17 +4,14 @@ import com.docker.learning.convidados.domain.dto.AnfitriaoDTORequest;
 import com.docker.learning.convidados.domain.dto.ConviteDTORequest;
 import com.docker.learning.convidados.domain.dto.ConviteDTOResponse;
 import com.docker.learning.convidados.domain.model.Anfitriao;
-import com.docker.learning.convidados.domain.model.Convidado;
 import com.docker.learning.convidados.domain.model.Convite;
 import com.docker.learning.convidados.domain.repository.AnfitriaoRepository;
 import com.docker.learning.convidados.domain.repository.ConvidadoRepository;
 import com.docker.learning.convidados.domain.repository.ConviteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,8 +20,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Service
 @EnableScheduling
@@ -59,14 +54,14 @@ public class AnfitriaoService {
         var anfitriao = repository.findById(anfitriaoId);
 
        if(anfitriaoId == null){
-           throw new IllegalArgumentException("Id do anfitrião não pode ser nulo");
+       throw new EntityNotFoundException("Id do anfitrião não pode ser nulo");
        }
        if(anfitriao.isEmpty()){
            throw new EntityNotFoundException("Anfitrião não encontrado.");
        }
 
-        LocalDateTime now = LocalDateTime.now();
-        DayOfWeek dayOfWeek = now.getDayOfWeek();
+       LocalDateTime now = LocalDateTime.now();
+       DayOfWeek dayOfWeek = now.getDayOfWeek();
        var dataLimite = now.minusDays(dayOfWeek.getValue() - 1);
        int convitesUsadosDaSemana = conviteRepository.countInvitePerWeek(anfitriaoId, dataLimite);
        int total =  15 - convitesUsadosDaSemana;
@@ -77,8 +72,9 @@ public class AnfitriaoService {
 
     @Transactional
     public ConviteDTOResponse postConvite(ConviteDTORequest convite){
+
         Anfitriao anfitriao = repository.findById(convite.idAnfitriao())
-                .orElseThrow(() -> new RuntimeException("Anfitrião não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Anfitrião não encontrado"));
 
         int convitesRestantes = totalConvites(anfitriao.getId());
         if (convitesRestantes <= 0) {
@@ -128,7 +124,7 @@ public class AnfitriaoService {
     @Transactional
     public void deleteConvite(Long idConvite){
         var convite = conviteRepository.findById(idConvite).orElseThrow(() -> new
-                IllegalArgumentException("Id inexistente! Impossível excluir"));
+                ValidationException("Id inexistente! Impossível excluir"));
 
         Anfitriao anfitriao = convite.getAnfitriao();
         if (anfitriao != null) {
